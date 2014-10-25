@@ -33,7 +33,7 @@ annotate("text", x=c(7.4,7.5),  y=c(0.5,0.55), size=3,
           label=c("Uniform Density", "Density of samples")) 
 annotate("segment", x = c(6.2,6.2), xend = c(6.4,6.4), y  = c(0.5,0.55), 
           yend = c(0.5,0.55),colour = c("red", "blue"))
-
+plot(g)
 
 ```
 
