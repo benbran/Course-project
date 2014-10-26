@@ -57,16 +57,12 @@ coverage <- sapply(lambda_val, function(lambda){
 
 ggplot(data.frame(lambda_val, coverage), aes(x=lambda_val, y=coverage)) +  
     geom_line(size = .25) + geom_hline(yintercept = 0.95) + 
-    geom_hline(yintercept = 0.925, colour='navy', linetype=2)+
+    geom_hline(yintercept = 0.925, colour='red', linetype=2)+
     ylim(.85, 1.0) +  xlab("Lambda") +  
     ggtitle("Coverage of 95% intervals")
-
-    # check coverage max and min
-max(coverage)
-min(coverage)
 ```
 
-We seem to have a 92.5% coverage for the 95% confidence intervals of sample size 40. Lambda does not affect the coverage
+We seem to have a 92.5% coverage for the 95% confidence intervals of sample size 40. Lambda does not affect the coverage.
 
 
 
