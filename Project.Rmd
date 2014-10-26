@@ -64,7 +64,7 @@ ggplot(data.frame(lambda_val, coverage), aes(x=lambda_val, y=coverage)) +
 
 We seem to have a 92.5% coverage for the 95% confidence intervals of sample size 40. Lambda does not affect the coverage.
 
-
+You can download/view the .Rmd file used to make this file on https://github.com/benbran/Course-project/blob/master/Project.Rmd
 
 
 
