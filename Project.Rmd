@@ -13,27 +13,74 @@ library(ggplot2) # plotting
 lambda <- 0.2
 n_samples <- 40 
 n_sims <- 2500
-mu <- apply(matrix(rexp(n_samples*n_sims, lambda), n_sims), 1, mean) #sample means
+mu <- apply(matrix(rexp(n_samples*n_sims, lambda), n_sims), 1, mean) # sample means
 mean_mu <- mean(mu) # mean of sample means
-mu_theor <- 1/lambda #theoretical mean
-var_mu <- var(mu) #variance of sample means
+mu_theor <- 1/lambda # theoretical mean
+var_mu <- var(mu) # variance of sample means
 var_theor <- 1/(n_samples*lambda^2)
 ```
-Now let's make the plot object using **ggplot**. 
+Now let's make the plot object using **ggplot**, after some heavy reading of the ggplot help page:
 
 ```{r}
-g <- ggplot(data=data.frame(mu), aes(x=mu)) 
-geom_histogram(aes(y=..density..), binwidth=0.1, fill='lightblue', colour='black') 
-geom_density(colour="blue")+   stat_function(fun=dnorm, colour="red", size=1,
-            args=list(mean=5,sd=1/(lambda)*(1/sqrt(n_samples)))
-             
-xlab("Means") + ylab("") 
-ggtitle("Means of Samples from Exponential Distribution")  
-annotate("text", x=c(7.4,7.5),  y=c(0.5,0.55), size=3,
-          label=c("Uniform Density", "Density of samples")) 
-annotate("segment", x = c(6.2,6.2), xend = c(6.4,6.4), y  = c(0.5,0.55), 
-          yend = c(0.5,0.55),colour = c("red", "blue"))
-plot(g)
-
+g <- ggplot(data = data.frame(mu), aes(x=mu)) +
+  geom_histogram(aes(y=..density..), binwidth=0.1, fill='lightblue', colour='black') +
+  geom_density(colour="brown") + stat_function(fun=dnorm, colour="red", size=1,
+             args = list(mean = 5,sd = 1/(lambda)*(1/sqrt(n_samples))))
 ```
+
+Now we plot these to verify how "normal" they are. Note the red distribution is a normal distribution with mean 5 and standard deviation defined above, and the brown curve is the fitted exponential. This shows that it indeed approaches normality.
+
+```{r}
+plot(g)
+```
+
+We can also can confirm this with a Shapiro-Wilkins test:
+```{r}
+shapiro <- shapiro.test(mu)$p.value # answer is 2.208415e-12
+```
+The distribution is also centered on 5. Now let's take a look at the confidence interval for 1/lambda.
+
+
+```{r}
+lambda_val <- seq(0.1, 100.0, by = .5)
+coverage <- sapply(lambda_val, function(lambda){
+  runs   <- matrix(rexp(n_samples*n_sims,lambda) , n_sims)    
+  lhats  <- apply(runs , 1, mean)
+  lsd    <- apply(runs,1,sd)
+  ll     <- lhats - qnorm(.975) * lsd /sqrt(n_samples)
+  ul     <- lhats + qnorm(.975) * lsd /sqrt(n_samples)
+  mean(ll < 1/lambda & ul > 1/lambda)
+
+  })
+
+# plot all the things
+
+ggplot(data.frame(lambda_val, coverage), aes(x=lambda_val, y=coverage)) +  
+    geom_line(size = .25) + geom_hline(yintercept = 0.95) + 
+    geom_hline(yintercept = 0.925, colour='navy', linetype=2)+
+    ylim(.85, 1.0) +  xlab("Lambda") +  
+    ggtitle("Coverage of 95% intervals")
+
+    # check coverage max and min
+max(coverage)
+min(coverage)
+```
+
+We seem to have a 92.5% coverage for the 95% confidence intervals of sample size 40. Lambda does not affect the coverage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
